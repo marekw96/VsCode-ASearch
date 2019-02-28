@@ -6,9 +6,10 @@ let webView;
 function loadFilesInWorkingspace() {
     vscode.workspace.findFiles("**/*").then(urls => {
         for (let fileUri of urls) {
-            let splitedPath = fileUri.path.toString().split("/");
-            let fileName = splitedPath[splitedPath.length - 1];
-            files[fileName] = fileUri;
+            let path = fileUri.toString();
+            let splitedPath = path.split("/");
+            let fileName = splitedPath[splitedPath.length - 1].toLocaleLowerCase();
+            files[fileName] = path;
         }
         vscode.window.showInformationMessage("Indexed " + urls.length + " files");
     });
@@ -17,7 +18,6 @@ function showSearchPanel(context) {
     webView = vscode.window.createWebviewPanel('aSearch', 'ASearch', vscode.ViewColumn.One, {
         enableScripts: true
     });
-    // And set its HTML content
     webView.webview.html = getWebviewContent();
     webView.webview.onDidReceiveMessage(message => {
         switch (message.command) {
@@ -42,9 +42,8 @@ function searchAndReturnMessage(phrase) {
         return;
     }
     for (let key in files) {
-        let path = files[key].toString().toLocaleLowerCase();
-        if (path.search(needle) != -1)
-            foundPath.push(files[key].toString());
+        if (key.search(needle) != -1)
+            foundPath.push(files[key]);
     }
     webView.webview.postMessage({ command: "filesFound",
         filesFound: foundPath });
@@ -102,8 +101,6 @@ function getWebviewContent() {
 
 		function openText(path)
 		{
-			var holder = document.getElementById("searchResult");
-					holder.innerHTML = "";
 			vscode.postMessage({command: 'open', path: path});
 		}
 	</script>
