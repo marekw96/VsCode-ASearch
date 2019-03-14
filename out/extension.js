@@ -70,7 +70,18 @@ function getWebviewContent() {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>ASearch</title>
+
 	<style>
+		#searchResult ul{
+			list-style: none;
+		}
+
+		#searchResult li{
+			width: 100%;
+			padding: 4px;
+			margin-bottom: 4px;
+			dispaly: block;
+		}
 		input{
 			width: 100%;
 		}
@@ -79,7 +90,7 @@ function getWebviewContent() {
 		}
 	</style>
 </head>
-<body>
+<body class="vscode-dark">
 	<input id="fileName" placeholder="Search file name" onKeyUp="doSearch()" autofocus/>
 	<div id="searchResult">Empty Result</div>
 	
