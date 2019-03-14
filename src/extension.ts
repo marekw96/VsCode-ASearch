@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 
 let files: {[Key: string]: string; } = {};
-let webView: vscode.WebviewPanel;
+let webView: vscode.WebviewPanel | undefined = undefined;
 
 function loadFilesInWorkingspace()
 {
@@ -20,6 +20,15 @@ function loadFilesInWorkingspace()
 
 function showSearchPanel(context : vscode.ExtensionContext)
 {
+	const columnToShowIn = vscode.window.activeTextEditor
+							? vscode.window.activeTextEditor.viewColumn
+							: vscode.ViewColumn.One;
+
+	if(webView)
+	{
+		webView.reveal(columnToShowIn)
+		return;
+	}
 	webView = vscode.window.createWebviewPanel(
 		'aSearch',
 		'ASearch',
@@ -30,6 +39,15 @@ function showSearchPanel(context : vscode.ExtensionContext)
 	);
 
 	webView.webview.html = getWebviewContent();
+	
+	webView.onDidDispose(
+		() => {
+			webView = undefined;
+		},
+		null,
+		context.subscriptions
+	);
+
 	webView.webview.onDidReceiveMessage(message => {
 		switch (message.command){
 			case 'doSearch':
@@ -53,7 +71,7 @@ function searchAndReturnMessage(phrase: string)
 
 	if(phrase.length == 0)
 	{
-		webView.webview.postMessage({ command: "filesFound", filesFound: []});
+		webView!.webview.postMessage({ command: "filesFound", filesFound: []});
 		return;
 	}
 
@@ -63,7 +81,7 @@ function searchAndReturnMessage(phrase: string)
 			foundPath.push(files[key]);
 	}
 
-	webView.webview.postMessage({ command: "filesFound",
+	webView!.webview.postMessage({ command: "filesFound",
 								  filesFound: foundPath});
 	//console.log("Returned " + foundPath.length);						  
 }

@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const vscode = require("vscode");
 let files = {};
-let webView;
+let webView = undefined;
 function loadFilesInWorkingspace() {
     vscode.workspace.findFiles("**/*").then(urls => {
         for (let fileUri of urls) {
@@ -15,10 +15,20 @@ function loadFilesInWorkingspace() {
     });
 }
 function showSearchPanel(context) {
+    const columnToShowIn = vscode.window.activeTextEditor
+        ? vscode.window.activeTextEditor.viewColumn
+        : vscode.ViewColumn.One;
+    if (webView) {
+        webView.reveal(columnToShowIn);
+        return;
+    }
     webView = vscode.window.createWebviewPanel('aSearch', 'ASearch', vscode.ViewColumn.One, {
         enableScripts: true
     });
     webView.webview.html = getWebviewContent();
+    webView.onDidDispose(() => {
+        webView = undefined;
+    }, null, context.subscriptions);
     webView.webview.onDidReceiveMessage(message => {
         switch (message.command) {
             case 'doSearch':
