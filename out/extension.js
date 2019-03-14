@@ -23,13 +23,13 @@ function showSearchPanel(context) {
         switch (message.command) {
             case 'doSearch':
                 searchAndReturnMessage(message.text);
-                vscode.window.showInformationMessage("Do search with" + message.text);
+                //vscode.window.showInformationMessage("Do search with" + message.text);
                 return;
             case 'open':
                 openFile(message.path);
                 return;
             case 'ok':
-                console.log("ok");
+                //console.log("ok");
                 return;
         }
     }, undefined, context.subscriptions);
@@ -47,10 +47,10 @@ function searchAndReturnMessage(phrase) {
     }
     webView.webview.postMessage({ command: "filesFound",
         filesFound: foundPath });
-    console.log("Returned " + foundPath.length);
+    //console.log("Returned " + foundPath.length);						  
 }
 function openFile(path) {
-    console.log("Open: " + path);
+    //console.log("Open: " + path);
     vscode.window.showTextDocument(vscode.Uri.parse(path));
 }
 function getWebviewContent() {
@@ -70,11 +70,19 @@ function getWebviewContent() {
 	</style>
 </head>
 <body>
-	<input id="fileName" placeholder="Search file name" onKeyUp="doSearch()"/>
+	<input id="fileName" placeholder="Search file name" onKeyUp="doSearch()" autofocus/>
 	<div id="searchResult">Empty Result</div>
 	
 	<script>
 		const vscode = acquireVsCodeApi();
+		var keyupTimer;
+
+		function doSearchDelay()
+		{
+			clearTimeout(keyupTimer);
+			keyupTimer = setTimeout(doSearch, 500);
+		}
+
 		function doSearch()
 		{
 			var fieldValue = document.getElementById("fileName").value;
