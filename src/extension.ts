@@ -125,6 +125,7 @@ function getWebviewContent()
 
 		function doSearch()
 		{
+			document.getElementById("searchResult").innerHTML = "Loading...";
 			var fieldValue = document.getElementById("fileName").value;
 			vscode.postMessage({command: 'doSearch',
 								text: fieldValue})
