@@ -88,6 +88,10 @@ function getWebviewContent() {
 		searchResult{
 			color: white;
 		}
+
+		.hoverItem{
+			text-decoration: underline;
+		}
 	</style>
 </head>
 <body class="vscode-dark">
@@ -95,8 +99,13 @@ function getWebviewContent() {
 	<div id="searchResult">Empty Result</div>
 	
 	<script>
+		var selected = 0;
+		var numberOfItems;
+		var searchResult = document.getElementById("searchResult");
+		var lastSelected;
 		const vscode = acquireVsCodeApi();
 		var keyupTimer;
+		var lastSearch;
 
 		function doSearchDelay()
 		{
@@ -106,10 +115,14 @@ function getWebviewContent() {
 
 		function doSearch()
 		{
-			document.getElementById("searchResult").innerHTML = "Loading...";
 			var fieldValue = document.getElementById("fileName").value;
-			vscode.postMessage({command: 'doSearch',
-								text: fieldValue})
+
+			if(fieldValue.localeCompare(lastSearch) != 0){
+				lastSearch = fieldValue;
+				searchResult.innerHTML = "Loading...";
+				vscode.postMessage({command: 'doSearch',
+									text: fieldValue});
+			}
 		}
 
 		window.addEventListener('message', event => {
@@ -117,14 +130,18 @@ function getWebviewContent() {
 
 			switch (message.command){
 				case 'filesFound':
-					var holder = document.getElementById("searchResult");
-					holder.innerHTML = "";
+					let output = "<ul>";
 					for(var file of message.filesFound)
 					{
 						var a = "openText('"+file+"')";
-						holder.innerHTML += '<li onClick="'+a+'">' + file + '</li>';
+						output += '<li onClick="'+a+'">' + file + '</li>';
 					}
+					output += "</ul>";
+					searchResult.innerHTML += output;
 					vscode.postMessage({command: 'ok'})
+
+					resetKeyboardControl();
+					highlight(selected);
 				break;
 			}
 		});
@@ -133,6 +150,65 @@ function getWebviewContent() {
 		{
 			vscode.postMessage({command: 'open', path: path});
 		}
+
+		function resetKeyboardControl()
+		{
+			selected = 0;
+			lastSelected = null;
+			numberOfItems = searchResult.children[0].children.length;
+		}
+
+		function highlight(id)
+		{
+			if(id >= numberOfItems)
+			{
+				id = 0;
+				selected = id;
+			}
+			if(id < 0)
+			{
+				id = numberOfItems - 1;
+				selected = id;
+			}
+				
+			if(lastSelected != null)
+				lastSelected.classList.remove('hoverItem');
+				
+			if(id < numberOfItems && searchResult.children[0].children[id]){
+
+				searchResult.children[0].children[id].classList.add('hoverItem');
+				lastSelected = searchResult.children[0].children[id];
+			}
+		}
+		
+		window.addEventListener("keydown", function (event) {
+		  if (event.defaultPrevented) {
+			return; // Do nothing if the event was already processed
+		  }
+		
+		  switch (event.key) {
+			case "Down":
+			case "ArrowDown":
+				++selected;
+				highlight(selected)
+			  break;
+			  
+			case "Up":
+			case "ArrowUp":
+				--selected;
+				highlight(selected)
+				break;
+			case "Enter":
+				openText(lastSelected.innerHTML);
+			  break;
+			case "Esc":
+			case "Escape":
+			  break;
+			default:
+			  return;
+		  }
+		  event.preventDefault();
+		}, true);
 	</script>
 </body>
 </html>`;
