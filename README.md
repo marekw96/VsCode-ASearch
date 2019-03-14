@@ -1,65 +1,24 @@
-# asearch README
+# ASearch
 
-This is the README for your extension "asearch". After writing up a brief description, we recommend including the following sections.
+#### Why ?
+- Allows to quite fast search for file located in directories that are hosted on external devices
+- Provides API to other plugins to fast look for files 
 
-## Features
+#### Commands
+> extension.showSearchWindow
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+As it says, shows search window
 
-For example if there is an image subfolder under your extension project workspace:
+>extension.reindexFiles
 
-\!\[feature X\]\(images/feature-x.png\)
+Use it to reindex files. If something bad to them happened.
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
 
-## Requirements
+#### How it works?
+1. At start of vsc it should index files that are in working directories.
+2. If not, use command above.
+3. Use command to show window (Or assign it to shortcut)
+4. On new window, in field you can type part of file you are looking for (Do not worry, it's case insensitive)
+5. Use mouse, or keys and enter to select file you need.
+6. Enjoy ?
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
-
-## Extension Settings
-
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
-This extension contributes the following settings:
-
-* `myExtension.enable`: enable/disable this extension
-* `myExtension.thing`: set to `blah` to do something
-
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
------------------------------------------------------------------------------------------------------------
-
-## Working with Markdown
-
-**Note:** You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+CMD+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (macOS) to see a list of Markdown snippets
-
-### For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
